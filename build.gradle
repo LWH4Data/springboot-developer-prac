@@ -1,0 +1,76 @@
+// 프로젝트에 사용할 플러그인을 관리.
+plugins {
+    id 'java'
+    // 스프링 부트 플러그
+    id 'org.springframework.boot' version '4.0.6'
+    // 스프링의 의존성을 관리.
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+// 지정한 그룹 이름. (코드 패키지 이름).
+//   - 예) src/main/java/me/shinsunyoung.
+group = 'me.shinsunyoung'
+version = '0.0.1-SNAPSHOT'
+description = 'springboot-developer'
+
+java {
+    toolchain {
+        // 지정한 JDK 버전.
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+// 의존성을 받을 저장소.
+repositories {
+    mavenCentral()
+    // AI 기능을 위해 추가.
+    maven { url 'https://repo.spring.io/milestone' }
+}
+
+// 프로젝트에서 필요한 의존성을 입력한다.
+//   - 프로젝트에서 가장 많이 사용하게 될 부분 (아마도 의존성을 추가하기 때문에).
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // 스프링 부트용 JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // 테스트를 위해 H2 활성화.
+    implementation 'org.springframework.boot:spring-boot-h2console'
+    // 타임리프를 위한 의존성 추가.
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    // Spring AI를 사용하기 위한 의존성 추가.
+    implementation platform('org.springframework.ai:spring-ai-bom:2.0.0-M1')
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+    // 스프링 시큐리티를 사용하기 위한 스타터 추가.
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // 타임리프에서 스프링 시큐리티를 사용하기 위한 의존성 추가.
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    // 스프링 시큐리티를 테스트하기 위한 의존성 추가.
+    testImplementation 'org.springframework.security:spring-security-test'
+    // JWT 사용을 위한 의존성 추가.
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.projectlombok:lombok'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'    // 자바 JWT 라이브러리.
+    implementation 'javax.xml.bind:jaxb-api:2.3.1' // XML 문서와 Java 객체 간 매핑 자동화.
+    // OAuth2를 위한 의존성 추가.
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // 인메모리 데이터베이스
+    runtimeOnly 'com.h2database:h2'
+    // 롬복
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+    
+    // S3 실습 의존성 추가.
+    // implementation 'software.amazon.awssdk:s3:2.41.31'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
