@@ -74,3 +74,8 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// build 시에 plain.jar 파일이 생기지 않도록 설정.
+jar {
+  enabled = false
+}
