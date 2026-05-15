@@ -2,6 +2,7 @@ package me.shinsunyoung.springbootdeveloper.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import me.shinsunyoung.springbootdeveloper.config.error.exception.ArticleNotFoundException;
 import me.shinsunyoung.springbootdeveloper.domain.Article;
 import me.shinsunyoung.springbootdeveloper.dto.AddArticleRequest;
 import me.shinsunyoung.springbootdeveloper.dto.UpdateArticleRequest;
@@ -38,7 +39,7 @@ public class BlogService {
   //   - 소속된 객체가 다르기 때문에 같은 이름의 메소드 정의가 가능하다.
   public Article findById(long id) {
     return blogRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+            .orElseThrow(ArticleNotFoundException::new);
   }
 
   // 토큰을 활용한 DB 데이터 삭제 방식으로 변경한다.
