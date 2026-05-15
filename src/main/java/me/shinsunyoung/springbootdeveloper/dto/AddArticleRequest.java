@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.shinsunyoung.springbootdeveloper.domain.Article;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 // 기본 생성자 추가.
 //   - JPA는 DB에서 데이터를 조회하고 객체를 만들 때 우선 파라미터가 없는
 //     기본 생성자를 생성하기에 필요하다.
@@ -15,7 +18,11 @@ import me.shinsunyoung.springbootdeveloper.domain.Article;
 @Getter
 public class AddArticleRequest {
 
+  @NotNull
+  @Size(min = 1, max = 10)
   private String title;
+
+  @NotNull
   private String content;
   // 이미지 url 추가.
   private String imageUrl;

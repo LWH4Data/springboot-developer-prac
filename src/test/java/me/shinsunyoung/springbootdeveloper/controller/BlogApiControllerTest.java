@@ -6,6 +6,7 @@ import me.shinsunyoung.springbootdeveloper.dto.AddArticleRequest;
 import me.shinsunyoung.springbootdeveloper.dto.UpdateArticleRequest;
 import me.shinsunyoung.springbootdeveloper.repository.BlogRepository;
 import me.shinsunyoung.springbootdeveloper.repository.UserRepository;
+import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -204,5 +205,69 @@ class BlogApiControllerTest {
             .author(user.getUsername())
             .content("content")
             .build());
+  }
+
+  // 값 검증 테스트 추가.
+  @DisplayName("addArticle: 아티클 추가할 때 title이 null이면 실패한다.")
+  @Test
+  public void addArticleNullValidation() throws Exception {
+    // given
+    //   - 블로그 글 추가에 필요한 요청 객체를 만든다.
+    final String url = "/api/articles";
+    // title은 null로 설정한다.
+    final String title = null;
+    final String content = "content";
+    final AddArticleRequest userRequest = new AddArticleRequest(title, content);
+
+    final String requestBody = objectMapper.writeValueAsString(userRequest);
+
+    Principal principal = Mockito.mock(Principal.class);
+    Mockito.when(principal.getName()).thenReturn("username");
+
+    // when
+    //   - 블로그 글 추가 API에 요청을 보낸다.
+    ResultActions result = mockMvc.perform(post(url)
+            // 요청 타입은 JSON
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            // given에서 만들어둔 객체를 요청 본문으로 함께 보낸다.
+            .principal(principal)
+            .content(requestBody));
+
+    // then
+    //   - 응답 코드가 400 Bad Request인지 확인한다.
+    result.andExpect(status().isBadRequest());
+  }
+
+  @DisplayName("addArticle: 아티클을 추가할 때 title이 10자를 넘으면 실패한다.")
+  @Test
+  public void addArticleSizeValidation() throws Exception {
+    // given
+    //   - 블로그 글 추가에 필요한 요청 객체를 만든다.
+    Faker faker = new Faker();
+
+    final String url = "/api/articles";
+    // title에는 길이 11의 문자가 들어가도록 설정한다.
+    final String title = faker.lorem().characters(11);
+    final String content = "content";
+    final AddArticleRequest userRequest = new AddArticleRequest(title, content);
+
+    final String requestBody = objectMapper.writeValueAsString(userRequest);
+
+    Principal principal = Mockito.mock(Principal.class);
+    Mockito.when(principal.getName()).thenReturn("username");
+
+    // when
+    //   - 블로그 글 추가 API에 요청을 보낸다.
+    ResultActions result = mockMvc.perform(post(url)
+            // 요청 타입은 JSON
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            // given 절에서 미리 만들어둔 객체를 요청 본문으로 함께 보낸다.
+            .principal(principal)
+            .content(requestBody));
+
+    // then
+    //   - 응답 코드가 400 Bad Request인지 확인한다.
+    result.andExpect(status().isBadRequest());
+
   }
 }

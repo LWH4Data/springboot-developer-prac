@@ -69,6 +69,19 @@ dependencies {
     
     // S3 실습 의존성 추가.
     // implementation 'software.amazon.awssdk:s3:2.41.31'
+
+    // 검증을 위한 의존성 추가.
+    //   - Faker는 테스트를 진행할 때 가짜 데이터를 생성해주는 오픈소스 라이브러리이다.
+    /*
+    < Faker 예 .
+    Faker faker = new Faker(new Lcale("ko"));  // Local을 넣지 않으면 영어로 생성된다.
+
+    String name = faker.address().fullAddress()  // 85877 구로읍, 부천구, 부산
+    Stirng firstName = faker.name.name()  // 홍 길동
+    String lastName = faker.food.fruit()  // Melon
+     */
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    testImplementation 'net.datafaker:datafaker:2.5.4'
 }
 
 tasks.named('test') {
