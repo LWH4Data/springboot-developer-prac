@@ -2,6 +2,7 @@ package me.shinsunyoung.springbootdeveloper.controller;
 
 import lombok.RequiredArgsConstructor;
 import me.shinsunyoung.springbootdeveloper.domain.Article;
+import me.shinsunyoung.springbootdeveloper.domain.Comment;
 import me.shinsunyoung.springbootdeveloper.dto.*;
 import me.shinsunyoung.springbootdeveloper.service.BlogService;
 import me.shinsunyoung.springbootdeveloper.service.ThumbnailGeneratorService;
@@ -53,6 +54,15 @@ public class BlogApiController {
 
     return ResponseEntity.ok()
             .body(response);
+  }
+
+  // 댓글 추가 요청 처리.
+  //   - 요청한 블로그 글 아이디로 블로그 글을 찾아 댓글 내용,
+  @PostMapping("/api/comments")
+  public ResponseEntity<AddCommentResponse> addComment(@RequestBody AddCommentRequest request, Principal principal) {
+    Comment savedComment = blogService.addComment(request, principal.getName());
+    return ResponseEntity.status(HttpStatus.CREATED)
+            .body(new AddCommentResponse(savedComment));
   }
 
   // 전체 게시글 조회 API

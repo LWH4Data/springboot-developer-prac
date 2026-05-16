@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 // < 롬복 사용 O > ======================================================================
 // - Getter와 protected 생성자 작성을 대체한다.
@@ -57,6 +58,13 @@ public class Article {
   @LastModifiedDate
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
+
+  // Comment와의 관계 생성.
+  //   - mappedBy: 자식 엔티티(Comment)가 부모 엔티티(Article)을 참조할 때 사용한다.
+  //   - cascade: 부모 엔티티(Article)를 변경할 때 자식 엔티티(Comment)에 전파하기
+  //     위한 방법으로 섹제에 관련된 설정이다. (Article 엔티티 삭제 → 관련된 Comment 엔티티 삭제).
+  @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE)
+  private List<Comment> comments;
 
   // 빌더 패턴으로 객체 생성.
   //   - 롬복에서 지원하는 애너테이션이다.

@@ -2,10 +2,13 @@ package me.shinsunyoung.springbootdeveloper.controller;
 
 import me.shinsunyoung.springbootdeveloper.config.error.ErrorCode;
 import me.shinsunyoung.springbootdeveloper.domain.Article;
+import me.shinsunyoung.springbootdeveloper.domain.Comment;
 import me.shinsunyoung.springbootdeveloper.domain.User;
 import me.shinsunyoung.springbootdeveloper.dto.AddArticleRequest;
+import me.shinsunyoung.springbootdeveloper.dto.AddCommentRequest;
 import me.shinsunyoung.springbootdeveloper.dto.UpdateArticleRequest;
 import me.shinsunyoung.springbootdeveloper.repository.BlogRepository;
+import me.shinsunyoung.springbootdeveloper.repository.CommentRepository;
 import me.shinsunyoung.springbootdeveloper.repository.UserRepository;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,6 +62,10 @@ class BlogApiControllerTest {
   @Autowired
   UserRepository userRepository;
 
+  // 댓글 추가 테스트 추가.
+  @Autowired
+  CommentRepository commentRepository;
+
   User user;
 
   // setAuthentication() 메서드를 통해 테스트 유저를 지정한다.
@@ -80,6 +87,8 @@ class BlogApiControllerTest {
     this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
             .build();
     blogRepository.deleteAll();
+    // 댓글 추가 테스트 추가.
+    commentRepository.deleteAll();
   }
 
   @DisplayName("addArticle: 블로그 글 추가에 성공한다.")
@@ -308,5 +317,43 @@ class BlogApiControllerTest {
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.message").value(ErrorCode.ARTICLE_NOT_FOUND.getMessage()))
             .andExpect(jsonPath("$.code").value(ErrorCode.ARTICLE_NOT_FOUND.getCode()));
+  }
+
+  @DisplayName("addComment: 댓글 추가에 성공한다.")
+  @Test
+  public void addComment() throws Exception {
+    // given
+    //   - 블로그 글을 생성하고, 생성한 블로그글에 댓글 추가를 저장할 요청 객체를 만든다.
+    final String url = "/api/comments";
+
+    Article savedArticle = createDefaultArticle();
+    final Long articleId = savedArticle.getId();
+    final String content = "content";
+    final AddCommentRequest userRequest = new AddCommentRequest(articleId, content);
+    final String requestBody = objectMapper.writeValueAsString(userRequest);
+
+    Principal principal = Mockito.mock(Principal.class);
+    Mockito.when(principal.getName()).thenReturn("username");
+
+    // when
+    //   - 댓글 추가 API에 요청을 보낸다.
+    ResultActions result = mockMvc.perform(post(url)
+            // 요청 타입은 JSON
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            // given에서 만들어 둔 객체를 보낸다.
+            .principal(principal)
+            .content(requestBody));
+
+    // then
+    //   - 응답 코드가 201 Created인지 확인한다.
+    result.andExpect(status().isCreated());
+
+    List<Comment> comments = commentRepository.findAll();
+
+    // Comment를 전체 조회해 크기가 1인지 확인하고
+    assertThat(comments.size()).isEqualTo(1);
+    // 실제로 저장된 데이터와 요청 값을 비교한다.
+    assertThat(comments.get(0).getArticle().getId()).isEqualTo(articleId);
+    assertThat(comments.get(0).getContent()).isEqualTo(content);
   }
 }

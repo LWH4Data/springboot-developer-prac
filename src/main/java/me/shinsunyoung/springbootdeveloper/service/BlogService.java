@@ -4,9 +4,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import me.shinsunyoung.springbootdeveloper.config.error.exception.ArticleNotFoundException;
 import me.shinsunyoung.springbootdeveloper.domain.Article;
+import me.shinsunyoung.springbootdeveloper.domain.Comment;
 import me.shinsunyoung.springbootdeveloper.dto.AddArticleRequest;
+import me.shinsunyoung.springbootdeveloper.dto.AddCommentRequest;
 import me.shinsunyoung.springbootdeveloper.dto.UpdateArticleRequest;
 import me.shinsunyoung.springbootdeveloper.repository.BlogRepository;
+import me.shinsunyoung.springbootdeveloper.repository.CommentRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,8 @@ import java.util.List;
 public class BlogService {
 
   private final BlogRepository blogRepository;
+  // 댓을 기능 추가.
+  private final CommentRepository commentRepository;
 
   // 블로그 글 추가 메소드.
   //   - save는 JpaRepository에서 지원하는 저장 메소드이다.
@@ -90,5 +95,16 @@ public class BlogService {
     if (!article.getAuthor().equals(userName)) {
       throw new IllegalArgumentException("not authorized");
     }
+  }
+
+  // 댓글 추가 기능 추가.
+  //   - 댓글을 추가하는 메소드.
+  public Comment addComment(AddCommentRequest request, String userName) {
+    // 요청 받은 블로그글 아이디로 글을 찾는다.
+    Article article = blogRepository.findById(request.getArticleId())
+            .orElseThrow(() -> new IllegalArgumentException("not found : " + request.getArticleId()));
+
+    // 댓글 내용, 작성자, 블로그 글을 넘겨주고 commentRepository의 save() 메서드를 호출해 댓글을 생성한다.
+    return commentRepository.save(request.toEntity(userName, article));
   }
 }

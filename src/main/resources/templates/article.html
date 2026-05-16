@@ -34,6 +34,28 @@
         <!-- [삭제] 버튼에 id 추가 -->
         <button type="button" id="delete-btn" class="btn btn-secondary btn-sm">삭제</button>
       </article>
+
+      <!-- 댓글 생성 버튼 추가. -->
+      <hr class="mt-5">
+
+      <section class="mb-5 mt-5">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">댓글 추가</h5>
+            <div class="mb-3">
+              <textarea class="form-control" id="content" rows="3"></textarea>
+            </div>
+            <button type="button" id="comment-create-btn" class="btn btn-primary">댓글 추가</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-3" th:each="comment : ${article.comments}">
+        <div class="card-body">
+          <div class="text-muted fst-italic mb-2" th:text="|Commented on ${#temporals.format(comment.createAt, 'yyyy-MM-dd HH:mm')} By ${comment.author}|"></div>
+          <p class="card-text" th:text="${comment.content"></p>
+        </div>
+      </section>
     </div>
   </div>
 </div>
